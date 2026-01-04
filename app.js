@@ -1,25 +1,39 @@
-const boardSize = 9;
-const board = document.getElementById("board");
-const winCountEl = document.getElementById("winCount");
-const starCountEl = document.getElementById("starCount");
-const levelDoneEl = document.getElementById("levelDone");
-const rewardModal = document.getElementById("rewardModal");
-const rewardGame = document.getElementById("rewardGame");
-const coachLine = document.getElementById("coachLine");
-const puzzlePanel = document.getElementById("puzzlePanel");
-const puzzleText = document.getElementById("puzzleText");
-const aiLevelSelect = document.getElementById("aiLevel");
-const rewardTitle = document.querySelector(".reward-header h2");
-const rewardSubtitle = document.querySelector(".reward-header p");
-const scoreLine = document.getElementById("scoreLine");
-const puzzleLevelSelect = document.getElementById("puzzleLevelSelect");
-const puzzleFileInput = document.getElementById("puzzleFile");
-const reviewModal = document.getElementById("reviewModal");
-const reviewBoard = document.getElementById("reviewBoard");
-const reviewSummary = document.getElementById("reviewSummary");
-const reviewDetail = document.getElementById("reviewDetail");
+// Configuration
+const CONFIG = {
+  boardSize: 9,
+  storageKey: "foxai-go-progress",
+  maxLevel: 10,
+  animationDuration: 280,
+  aiDelay: 520,
+  cardFlipDelay: 600,
+};
 
-const storageKey = "foxai-go-progress";
+// DOM Elements - cached for performance
+const DOM = {
+  board: document.getElementById("board"),
+  winCountEl: document.getElementById("winCount"),
+  starCountEl: document.getElementById("starCount"),
+  levelDoneEl: document.getElementById("levelDone"),
+  rewardModal: document.getElementById("rewardModal"),
+  rewardGame: document.getElementById("rewardGame"),
+  coachLine: document.getElementById("coachLine"),
+  puzzlePanel: document.getElementById("puzzlePanel"),
+  puzzleText: document.getElementById("puzzleText"),
+  aiLevelSelect: document.getElementById("aiLevel"),
+  rewardTitle: document.querySelector(".reward-header h2"),
+  rewardSubtitle: document.querySelector(".reward-header p"),
+  scoreLine: document.getElementById("scoreLine"),
+  puzzleLevelSelect: document.getElementById("puzzleLevelSelect"),
+  puzzleFileInput: document.getElementById("puzzleFile"),
+  reviewModal: document.getElementById("reviewModal"),
+  reviewBoard: document.getElementById("reviewBoard"),
+  reviewSummary: document.getElementById("reviewSummary"),
+  reviewDetail: document.getElementById("reviewDetail"),
+  headerRankPill: document.querySelector(".header-meta .pill:last-child"),
+  hintBtn: document.getElementById("hintBtn"),
+};
+
+const { boardSize, storageKey } = CONFIG;
 const levels = [
   "启蒙 1 级",
   "启蒙 2 级",
@@ -45,6 +59,7 @@ let state = {
   puzzleLevel: 0,
   passCount: 0,
   reviewData: null,
+  moveHistory: [],
   board: Array.from({ length: boardSize }, () =>
     Array.from({ length: boardSize }, () => null)
   ),
@@ -55,6 +70,12 @@ const coachLines = [
   "这步可以先连起来，别让小狐狸把你分开哦。",
   "先占住角落更稳，歪歪做得很棒！",
   "点亮星星就能解锁奖励，我们继续加油！",
+  "找找看哪颗白子只剩一口气了？",
+  "围住白子，不让它逃跑！",
+  "角上的点很重要哦，歪歪加油！",
+  "看看中间有没有好位置？",
+  "保护好自己的棋子，别被吃掉啦！",
+  "歪歪真聪明，继续思考！",
 ];
 
 const fallbackPuzzleData = {
@@ -244,13 +265,12 @@ function saveState() {
 }
 
 function updateProgress() {
-  winCountEl.textContent = state.wins;
-  starCountEl.textContent = state.stars;
-  levelDoneEl.textContent = state.levelDone;
-  const headerPill = document.querySelector(".header-meta .pill:last-child");
+  DOM.winCountEl.textContent = state.wins;
+  DOM.starCountEl.textContent = state.stars;
+  DOM.levelDoneEl.textContent = state.levelDone;
   const levelIndex = Math.min(state.levelDone - 1, levels.length - 1);
-  if (headerPill) {
-    headerPill.textContent = `段位：${levels[levelIndex]}`;
+  if (DOM.headerRankPill) {
+    DOM.headerRankPill.textContent = `段位：${levels[levelIndex]}`;
   }
 }
 
@@ -266,30 +286,34 @@ function renderLevels() {
 }
 
 function buildBoard() {
-  board.innerHTML = "";
+  DOM.board.innerHTML = "";
+  const fragment = document.createDocumentFragment();
   for (let row = 0; row < boardSize; row += 1) {
     for (let col = 0; col < boardSize; col += 1) {
       const cell = document.createElement("button");
       cell.className = "intersection";
       cell.dataset.row = row;
       cell.dataset.col = col;
+      cell.setAttribute("aria-label", `位置 ${row + 1}行 ${col + 1}列`);
       cell.addEventListener("click", handlePlayerMove);
-      board.appendChild(cell);
+      fragment.appendChild(cell);
     }
   }
+  DOM.board.appendChild(fragment);
 }
 
 function placeStone(row, col, color, animate = true) {
   const stone = document.createElement("div");
   stone.className = `stone-piece ${color}`;
+  stone.setAttribute("aria-hidden", "true");
   if (!animate) {
     stone.style.animation = "none";
     stone.style.transform = "translate(-50%, -50%) scale(1)";
   }
-  const cellSize = board.clientWidth / boardSize;
+  const cellSize = DOM.board.clientWidth / boardSize;
   stone.style.left = `${cellSize * col + cellSize / 2}px`;
   stone.style.top = `${cellSize * row + cellSize / 2}px`;
-  board.appendChild(stone);
+  DOM.board.appendChild(stone);
   state.board[row][col] = color;
 }
 
@@ -401,6 +425,7 @@ function handlePlayerMove(event) {
     return;
   }
   commitBoard(result.nextBoard);
+  state.moveHistory.push({ row, col, color: "black" });
   if (result.captured > 0) {
     handleCaptures();
   } else {
@@ -408,11 +433,12 @@ function handlePlayerMove(event) {
     updateScoreLine();
   }
   state.passCount = 0;
+  saveState(); // Auto-save after each move
   if (state.currentMode === "puzzle") {
     checkPuzzleAnswer(row, col);
     return;
   }
-  window.setTimeout(() => makeAiMove(state.aiLevel), 520);
+  window.setTimeout(() => makeAiMove(state.aiLevel), CONFIG.aiDelay);
 }
 
 function makeAiMove(level) {
@@ -453,6 +479,7 @@ function makeAiMove(level) {
     return;
   }
   commitBoard(pick.result.nextBoard);
+  state.moveHistory.push({ row: pick.row, col: pick.col, color: "white" });
   if (pick.result.captured > 0) {
     handleCaptures();
   } else {
@@ -465,12 +492,48 @@ function makeAiMove(level) {
 function handleWin() {
   state.wins += 1;
   state.stars += 2;
-  state.levelDone = Math.min(10, state.levelDone + 1);
+  state.levelDone = Math.min(CONFIG.maxLevel, state.levelDone + 1);
   resetBoard();
   updateProgress();
   renderLevels();
   saveState();
   speak("歪歪太棒了！你完成了这一关！");
+  createConfetti();
+}
+
+function createConfetti() {
+  const colors = ["#ff6f61", "#5ee4b4", "#ffcc4d", "#6bb6ff", "#ff9950"];
+  for (let i = 0; i < 30; i += 1) {
+    const confetti = document.createElement("div");
+    confetti.style.cssText = `
+      position: fixed;
+      width: 10px;
+      height: 10px;
+      background: ${colors[Math.floor(Math.random() * colors.length)]};
+      left: ${Math.random() * 100}vw;
+      top: -10px;
+      z-index: 1000;
+      pointer-events: none;
+      animation: fall ${2 + Math.random() * 2}s linear forwards;
+    `;
+    document.body.appendChild(confetti);
+    setTimeout(() => confetti.remove(), 4000);
+  }
+
+  // Add confetti animation if not exists
+  if (!document.getElementById("confetti-style")) {
+    const style = document.createElement("style");
+    style.id = "confetti-style";
+    style.textContent = `
+      @keyframes fall {
+        to {
+          transform: translateY(100vh) rotate(720deg);
+          opacity: 0;
+        }
+      }
+    `;
+    document.head.appendChild(style);
+  }
 }
 
 function resetBoard() {
@@ -480,26 +543,68 @@ function resetBoard() {
   state.currentBoardString = boardToString(state.board);
   state.lastBoardString = "";
   state.passCount = 0;
-  board.querySelectorAll(".stone-piece").forEach((node) => node.remove());
+  state.moveHistory = [];
+  DOM.board.querySelectorAll(".stone-piece").forEach((node) => node.remove());
   updateScoreLine();
+}
+
+function undoMove() {
+  if (state.moveHistory.length === 0) {
+    speak("没有可以撤销的步骤啦。");
+    return;
+  }
+  if (state.currentMode === "puzzle") {
+    speak("题库模式下不能撤销哦。");
+    return;
+  }
+
+  // Undo last two moves (player + AI)
+  state.moveHistory.pop();
+  state.moveHistory.pop();
+
+  // Reconstruct board from history
+  state.board = Array.from({ length: boardSize }, () =>
+    Array.from({ length: boardSize }, () => null)
+  );
+
+  state.moveHistory.forEach((move) => {
+    state.board[move.row][move.col] = move.color;
+  });
+
+  state.currentBoardString = boardToString(state.board);
+  state.lastBoardString = "";
+
+  // Redraw board
+  DOM.board.querySelectorAll(".stone-piece").forEach((node) => node.remove());
+  for (let row = 0; row < boardSize; row += 1) {
+    for (let col = 0; col < boardSize; col += 1) {
+      if (state.board[row][col]) {
+        placeStone(row, col, state.board[row][col], false);
+      }
+    }
+  }
+  updateScoreLine();
+  speak("撤销成功！");
 }
 
 function speak(text) {
   if (!window.speechSynthesis) {
+    console.log("[Speech]", text);
     return;
   }
   const utter = new SpeechSynthesisUtterance(text);
   utter.lang = "zh-CN";
   utter.rate = 0.95;
+  utter.pitch = 1.1;
   window.speechSynthesis.cancel();
   window.speechSynthesis.speak(utter);
 }
 
 function openRewardGame() {
-  rewardModal.classList.add("active");
-  rewardModal.setAttribute("aria-hidden", "false");
-  rewardTitle.textContent = "星星捕捉";
-  rewardSubtitle.textContent = "点亮 5 颗星星，解锁小狐狸贴纸！";
+  DOM.rewardModal.classList.add("active");
+  DOM.rewardModal.setAttribute("aria-hidden", "false");
+  DOM.rewardTitle.textContent = "星星捕捉";
+  DOM.rewardSubtitle.textContent = "点亮 5 颗星星，解锁小狐狸贴纸！";
   document
     .querySelectorAll(".tab-btn")
     .forEach((node) => node.classList.remove("active"));
@@ -510,43 +615,47 @@ function openRewardGame() {
 }
 
 function closeRewardGame() {
-  rewardModal.classList.remove("active");
-  rewardModal.setAttribute("aria-hidden", "true");
+  DOM.rewardModal.classList.remove("active");
+  DOM.rewardModal.setAttribute("aria-hidden", "true");
 }
 
 function buildStarGame() {
-  rewardGame.innerHTML = "";
+  DOM.rewardGame.innerHTML = "";
   for (let i = 0; i < 6; i += 1) {
     const star = document.createElement("div");
     star.className = "star";
+    star.setAttribute("role", "button");
+    star.setAttribute("aria-label", `星星 ${i + 1}`);
     star.style.left = `${10 + Math.random() * 80}%`;
     star.style.top = `${10 + Math.random() * 70}%`;
+    star.style.animationDelay = `${Math.random() * 2}s`;
     star.addEventListener("click", () => {
       star.remove();
       state.stars += 1;
       updateProgress();
       saveState();
-      if (rewardGame.querySelectorAll(".star").length === 0) {
+      if (DOM.rewardGame.querySelectorAll(".star").length === 0) {
         speak("奖励完成！歪歪获得了小狐狸贴纸！");
       }
     });
-    rewardGame.appendChild(star);
+    DOM.rewardGame.appendChild(star);
   }
 }
 
 function buildMemoryGame() {
-  rewardGame.innerHTML = "";
+  DOM.rewardGame.innerHTML = "";
   const emojis = ["🦊", "🌟", "🍎", "🎈", "🐼", "🎵"];
   const deck = [...emojis, ...emojis].sort(() => Math.random() - 0.5);
   const grid = document.createElement("div");
   grid.className = "memory-grid";
-  rewardGame.appendChild(grid);
+  DOM.rewardGame.appendChild(grid);
   let firstCard = null;
   let lock = false;
-  deck.forEach((emoji) => {
+  deck.forEach((emoji, index) => {
     const card = document.createElement("button");
     card.className = "memory-card";
     card.textContent = "❓";
+    card.setAttribute("aria-label", `卡片 ${index + 1}`);
     card.addEventListener("click", () => {
       if (lock || card.classList.contains("matched")) {
         return;
@@ -576,7 +685,7 @@ function buildMemoryGame() {
           firstCard.card.classList.remove("revealed");
           firstCard = null;
           lock = false;
-        }, 600);
+        }, CONFIG.cardFlipDelay);
       }
     });
     grid.appendChild(card);
@@ -594,7 +703,7 @@ function shouldAiPass(bestCandidate, emptyCount) {
 }
 
 function handleCaptures() {
-  const stones = board.querySelectorAll(".stone-piece");
+  const stones = DOM.board.querySelectorAll(".stone-piece");
   stones.forEach((node) => {
     node.remove();
   });
@@ -610,11 +719,11 @@ function handleCaptures() {
 
 function pickBestMove(candidates, level) {
   const weights = {
-    1: { capture: 4, liberty: 1, center: 0.5, random: 3 },
-    2: { capture: 6, liberty: 1.5, center: 0.7, random: 2 },
-    3: { capture: 8, liberty: 2, center: 1, random: 1.5 },
-    4: { capture: 10, liberty: 2.5, center: 1.2, random: 1 },
-    5: { capture: 14, liberty: 3, center: 1.5, random: 0.5 },
+    1: { capture: 4, liberty: 1, center: 0.5, random: 3, atari: 2, defend: 1 },
+    2: { capture: 6, liberty: 1.5, center: 0.7, random: 2, atari: 3, defend: 1.5 },
+    3: { capture: 8, liberty: 2, center: 1, random: 1.5, atari: 4, defend: 2 },
+    4: { capture: 10, liberty: 2.5, center: 1.2, random: 1, atari: 5, defend: 2.5 },
+    5: { capture: 14, liberty: 3, center: 1.5, random: 0.5, atari: 6, defend: 3 },
   };
   const weight = weights[level] || weights[3];
   let best = candidates[0];
@@ -625,10 +734,48 @@ function pickBestMove(candidates, level) {
       Math.abs(row - (boardSize - 1) / 2) + Math.abs(col - (boardSize - 1) / 2);
     const group = getGroup(result.nextBoard, row, col);
     const liberties = getLiberties(result.nextBoard, group).size;
+
+    // Check if this move puts opponent in atari (1 liberty)
+    let atariBonus = 0;
+    getNeighbors(row, col).forEach(([nr, nc]) => {
+      if (result.nextBoard[nr] && result.nextBoard[nr][nc] === "black") {
+        const opponentGroup = getGroup(result.nextBoard, nr, nc);
+        const opponentLiberties = getLiberties(result.nextBoard, opponentGroup).size;
+        if (opponentLiberties === 1) {
+          atariBonus += weight.atari;
+        }
+      }
+    });
+
+    // Check if this defends our own stones in atari
+    let defendBonus = 0;
+    getNeighbors(row, col).forEach(([nr, nc]) => {
+      if (result.nextBoard[nr] && result.nextBoard[nr][nc] === "white") {
+        const ourGroup = getGroup(result.nextBoard, nr, nc);
+        const ourLiberties = getLiberties(result.nextBoard, ourGroup).size;
+        if (ourLiberties <= 2) {
+          defendBonus += weight.defend;
+        }
+      }
+    });
+
+    // Corner and edge preference for opening
+    let positionBonus = 0;
+    if (state.moveHistory.length < 10) {
+      if ((row <= 1 || row >= boardSize - 2) && (col <= 1 || col >= boardSize - 2)) {
+        positionBonus = 2;
+      } else if (row >= 2 && row <= boardSize - 3 && col >= 2 && col <= boardSize - 3) {
+        positionBonus = -1;
+      }
+    }
+
     const score =
       result.captured * weight.capture +
       liberties * weight.liberty -
       centerDist * weight.center +
+      atariBonus +
+      defendBonus +
+      positionBonus +
       Math.random() * weight.random;
     if (score > bestScore) {
       best = candidate;
@@ -640,7 +787,7 @@ function pickBestMove(candidates, level) {
 
 function updateScoreLine() {
   const score = calculateScoreDetailed(state.board);
-  scoreLine.textContent = `黑 ${score.totalBlack} · 白 ${score.totalWhite}`;
+  DOM.scoreLine.textContent = `黑 ${score.totalBlack} · 白 ${score.totalWhite}`;
 }
 
 function calculateScoreDetailed(boardData) {
@@ -730,7 +877,7 @@ function endGame() {
       ? "黑胜"
       : "白胜";
   const message = `对局结束，${result}。黑 ${score.totalBlack} 分，白 ${score.totalWhite} 分。`;
-  coachLine.textContent = `歪歪，${message}`;
+  DOM.coachLine.textContent = `歪歪，${message}`;
   speak(message);
   state.reviewData = score;
   openReview();
@@ -750,7 +897,7 @@ function loadPuzzle(index) {
   });
   state.currentBoardString = boardToString(state.board);
   handleCaptures();
-  puzzleText.textContent = `第 ${index + 1} 题：${puzzle.title}`;
+  puzzleText.textContent = `第 ${index + 1}/${level.puzzles.length} 题：${puzzle.title}`;
   speak(`歪歪，${puzzle.title}`);
 }
 
@@ -760,7 +907,7 @@ function checkPuzzleAnswer(row, col) {
   if (puzzle.answer.row === row && puzzle.answer.col === col) {
     state.stars += 2;
     state.wins += 1;
-    state.levelDone = Math.min(10, state.levelDone + 1);
+    state.levelDone = Math.min(CONFIG.maxLevel, state.levelDone + 1);
     updateProgress();
     renderLevels();
     saveState();
@@ -772,6 +919,14 @@ function checkPuzzleAnswer(row, col) {
   }
 }
 
+function showPuzzleHint() {
+  const level = puzzleData.levels[state.puzzleLevel] || puzzleData.levels[0];
+  const puzzle = level.puzzles[state.puzzleIndex % level.puzzles.length];
+  const hintRow = puzzle.answer.row + 1;
+  const hintCol = puzzle.answer.col + 1;
+  speak(`提示：试试在第 ${hintRow} 行，第 ${hintCol} 列下子。`);
+}
+
 function setMode(mode) {
   state.currentMode = mode;
   const modeText = {
@@ -781,9 +936,15 @@ function setMode(mode) {
     story: "故事关卡：守护围棋森林",
     reward: "奖励乐园：收集贴纸与徽章",
   };
-  coachLine.textContent = `歪歪，进入${modeText[mode] || "新的模式"}！`;
-  speak(coachLine.textContent);
+  DOM.coachLine.textContent = `歪歪，进入${modeText[mode] || "新的模式"}！`;
+  speak(DOM.coachLine.textContent);
   puzzlePanel.style.display = mode === "puzzle" ? "flex" : "none";
+
+  // Update hint button text based on mode
+  if (DOM.hintBtn) {
+    DOM.hintBtn.textContent = mode === "puzzle" ? "题目提示" : "语音提示";
+  }
+
   if (mode === "puzzle") {
     loadPuzzle(state.puzzleIndex);
   } else {
@@ -821,45 +982,55 @@ function openReview() {
   if (!state.reviewData) {
     state.reviewData = calculateScoreDetailed(state.board);
   }
-  reviewModal.classList.add("active");
-  reviewModal.setAttribute("aria-hidden", "false");
+  DOM.reviewModal.classList.add("active");
+  DOM.reviewModal.setAttribute("aria-hidden", "false");
   const score = state.reviewData;
-  reviewSummary.textContent = `黑 ${score.totalBlack} · 白 ${score.totalWhite}`;
-  reviewDetail.textContent = `黑子 ${score.blackStones} + 黑地 ${score.blackTerritory} | 白子 ${score.whiteStones} + 白地 ${score.whiteTerritory}`;
+  DOM.reviewSummary.textContent = `黑 ${score.totalBlack} · 白 ${score.totalWhite}`;
+  DOM.reviewDetail.textContent = `黑子 ${score.blackStones} + 黑地 ${score.blackTerritory} | 白子 ${score.whiteStones} + 白地 ${score.whiteTerritory}`;
   renderReviewBoard(score.map, score.board);
 }
 
 function closeReview() {
-  reviewModal.classList.remove("active");
-  reviewModal.setAttribute("aria-hidden", "true");
+  DOM.reviewModal.classList.remove("active");
+  DOM.reviewModal.setAttribute("aria-hidden", "true");
 }
 
 function renderReviewBoard(map, boardData) {
-  reviewBoard.innerHTML = "";
+  DOM.reviewBoard.innerHTML = "";
+  const fragment = document.createDocumentFragment();
   for (let row = 0; row < boardSize; row += 1) {
     for (let col = 0; col < boardSize; col += 1) {
       const cell = document.createElement("div");
       cell.className = `review-cell territory-${map[row][col]}`;
+      cell.setAttribute("aria-label", `位置 ${row + 1}行 ${col + 1}列`);
       const stone = boardData[row][col];
       if (stone) {
         const piece = document.createElement("div");
         piece.className = `review-stone ${stone}`;
+        piece.setAttribute("aria-hidden", "true");
         cell.appendChild(piece);
       }
-      reviewBoard.appendChild(cell);
+      fragment.appendChild(cell);
     }
   }
+  DOM.reviewBoard.appendChild(fragment);
 }
 
 function bindActions() {
   document.getElementById("hintBtn").addEventListener("click", () => {
-    const line = coachLines[Math.floor(Math.random() * coachLines.length)];
-    speak(line);
+    if (state.currentMode === "puzzle") {
+      showPuzzleHint();
+    } else {
+      const line = coachLines[Math.floor(Math.random() * coachLines.length)];
+      speak(line);
+    }
   });
+
+  document.getElementById("undoBtn").addEventListener("click", undoMove);
 
   document.getElementById("coachBtn").addEventListener("click", () => {
     const line = coachLines[Math.floor(Math.random() * coachLines.length)];
-    coachLine.textContent = line;
+    DOM.coachLine.textContent = line;
     speak(line);
   });
 
@@ -902,12 +1073,12 @@ function bindActions() {
       tab.classList.add("active");
       const game = tab.dataset.game;
       if (game === "memory") {
-        rewardTitle.textContent = "连连乐";
-        rewardSubtitle.textContent = "翻开两张一样的牌，收集星星奖励。";
+        DOM.rewardTitle.textContent = "连连乐";
+        DOM.rewardSubtitle.textContent = "翻开两张一样的牌，收集星星奖励。";
         buildMemoryGame();
       } else {
-        rewardTitle.textContent = "星星捕捉";
-        rewardSubtitle.textContent = "点亮 5 颗星星，解锁小狐狸贴纸！";
+        DOM.rewardTitle.textContent = "星星捕捉";
+        DOM.rewardSubtitle.textContent = "点亮 5 颗星星，解锁小狐狸贴纸！";
         buildStarGame();
       }
     });
@@ -926,7 +1097,7 @@ function bindActions() {
     loadPuzzle(state.puzzleIndex);
   });
 
-  puzzleLevelSelect.addEventListener("change", (event) => {
+  DOM.puzzleLevelSelect.addEventListener("change", (event) => {
     state.puzzleLevel = Number(event.target.value);
     state.puzzleIndex = 0;
     saveState();
@@ -935,7 +1106,7 @@ function bindActions() {
     }
   });
 
-  puzzleFileInput.addEventListener("change", (event) => {
+  DOM.puzzleFileInput.addEventListener("change", (event) => {
     const file = event.target.files[0];
     if (!file) {
       return;
@@ -963,7 +1134,7 @@ function bindActions() {
     reader.readAsText(file);
   });
 
-  aiLevelSelect.addEventListener("change", (event) => {
+  DOM.aiLevelSelect.addEventListener("change", (event) => {
     state.aiLevel = Number(event.target.value);
     saveState();
   });
@@ -978,6 +1149,18 @@ function bindActions() {
       setMode(mode);
     });
   });
+
+  // Keyboard navigation support
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      if (DOM.rewardModal.classList.contains("active")) {
+        closeRewardGame();
+      }
+      if (DOM.reviewModal.classList.contains("active")) {
+        closeReview();
+      }
+    }
+  });
 }
 
 function init() {
@@ -991,6 +1174,9 @@ function init() {
     });
     setMode(state.currentMode);
   });
+
+  // Add loading indicator
+  console.log("围棋乐园已启动 | Go Learning Garden initialized");
 }
 
 init();

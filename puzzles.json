@@ -54,6 +54,45 @@
             { "row": 5, "col": 3, "color": "white" }
           ],
           "answer": { "row": 6, "col": 3 }
+        },
+        {
+          "title": "数气：找找只剩一口气",
+          "stones": [
+            { "row": 4, "col": 4, "color": "white" },
+            { "row": 4, "col": 3, "color": "black" },
+            { "row": 3, "col": 4, "color": "black" },
+            { "row": 5, "col": 4, "color": "black" }
+          ],
+          "answer": { "row": 4, "col": 5 }
+        },
+        {
+          "title": "连接：斜着连起来",
+          "stones": [
+            { "row": 3, "col": 3, "color": "black" },
+            { "row": 5, "col": 5, "color": "black" },
+            { "row": 4, "col": 4, "color": "white" }
+          ],
+          "answer": { "row": 4, "col": 3 }
+        },
+        {
+          "title": "吃子：双打吃",
+          "stones": [
+            { "row": 4, "col": 3, "color": "white" },
+            { "row": 4, "col": 5, "color": "white" },
+            { "row": 3, "col": 4, "color": "black" },
+            { "row": 5, "col": 4, "color": "black" },
+            { "row": 4, "col": 2, "color": "black" },
+            { "row": 4, "col": 6, "color": "black" }
+          ],
+          "answer": { "row": 4, "col": 4 }
+        },
+        {
+          "title": "占角：星位开局",
+          "stones": [
+            { "row": 2, "col": 2, "color": "white" },
+            { "row": 2, "col": 6, "color": "white" }
+          ],
+          "answer": { "row": 2, "col": 4 }
         }
       ]
     },
@@ -106,6 +145,38 @@
             { "row": 2, "col": 4, "color": "white" }
           ],
           "answer": { "row": 2, "col": 5 }
+        },
+        {
+          "title": "吃子：枷吃",
+          "stones": [
+            { "row": 4, "col": 4, "color": "white" },
+            { "row": 4, "col": 3, "color": "black" },
+            { "row": 3, "col": 3, "color": "black" },
+            { "row": 3, "col": 4, "color": "black" }
+          ],
+          "answer": { "row": 5, "col": 4 }
+        },
+        {
+          "title": "死活：做两只眼",
+          "stones": [
+            { "row": 4, "col": 4, "color": "black" },
+            { "row": 4, "col": 5, "color": "black" },
+            { "row": 5, "col": 4, "color": "black" },
+            { "row": 5, "col": 5, "color": "white" },
+            { "row": 3, "col": 4, "color": "white" },
+            { "row": 4, "col": 6, "color": "white" }
+          ],
+          "answer": { "row": 5, "col": 3 }
+        },
+        {
+          "title": "切断：挖断",
+          "stones": [
+            { "row": 4, "col": 3, "color": "black" },
+            { "row": 4, "col": 5, "color": "black" },
+            { "row": 3, "col": 4, "color": "white" },
+            { "row": 5, "col": 4, "color": "white" }
+          ],
+          "answer": { "row": 4, "col": 4 }
         }
       ]
     },
@@ -162,6 +233,68 @@
             { "row": 6, "col": 5, "color": "white" }
           ],
           "answer": { "row": 8, "col": 4 }
+        },
+        {
+          "title": "死活：倒扑",
+          "stones": [
+            { "row": 4, "col": 4, "color": "white" },
+            { "row": 3, "col": 3, "color": "black" },
+            { "row": 3, "col": 4, "color": "black" },
+            { "row": 3, "col": 5, "color": "black" },
+            { "row": 4, "col": 3, "color": "black" },
+            { "row": 4, "col": 5, "color": "black" }
+          ],
+          "answer": { "row": 4, "col": 4 }
+        },
+        {
+          "title": "手筋：接不归",
+          "stones": [
+            { "row": 4, "col": 4, "color": "white" },
+            { "row": 5, "col": 3, "color": "black" },
+            { "row": 5, "col": 5, "color": "black" },
+            { "row": 3, "col": 4, "color": "black" },
+            { "row": 4, "col": 3, "color": "black" },
+            { "row": 4, "col": 5, "color": "black" }
+          ],
+          "answer": { "row": 5, "col": 4 }
+        },
+        {
+          "title": "死活：板六",
+          "stones": [
+            { "row": 4, "col": 3, "color": "black" },
+            { "row": 4, "col": 4, "color": "black" },
+            { "row": 4, "col": 5, "color": "black" },
+            { "row": 5, "col": 3, "color": "black" },
+            { "row": 5, "col": 5, "color": "black" },
+            { "row": 3, "col": 3, "color": "white" },
+            { "row": 3, "col": 4, "color": "white" },
+            { "row": 3, "col": 5, "color": "white" }
+          ],
+          "answer": { "row": 5, "col": 4 }
+        },
+        {
+          "title": "手筋：金鸡独立",
+          "stones": [
+            { "row": 4, "col": 4, "color": "white" },
+            { "row": 4, "col": 3, "color": "black" },
+            { "row": 4, "col": 5, "color": "black" },
+            { "row": 3, "col": 4, "color": "black" },
+            { "row": 3, "col": 3, "color": "white" },
+            { "row": 3, "col": 5, "color": "white" }
+          ],
+          "answer": { "row": 5, "col": 4 }
+        },
+        {
+          "title": "对杀：紧气",
+          "stones": [
+            { "row": 4, "col": 4, "color": "black" },
+            { "row": 4, "col": 5, "color": "white" },
+            { "row": 4, "col": 3, "color": "black" },
+            { "row": 5, "col": 4, "color": "black" },
+            { "row": 5, "col": 5, "color": "white" },
+            { "row": 3, "col": 5, "color": "white" }
+          ],
+          "answer": { "row": 5, "col": 3 }
         }
       ]
     }
