@@ -1,0 +1,169 @@
+{
+  "levels": [
+    {
+      "id": "basic",
+      "name": "启蒙",
+      "puzzles": [
+        {
+          "title": "数气：吃掉一颗白子",
+          "stones": [
+            { "row": 3, "col": 3, "color": "black" },
+            { "row": 3, "col": 4, "color": "white" },
+            { "row": 4, "col": 3, "color": "black" },
+            { "row": 2, "col": 4, "color": "black" }
+          ],
+          "answer": { "row": 4, "col": 4 }
+        },
+        {
+          "title": "连接：让黑子相连",
+          "stones": [
+            { "row": 4, "col": 2, "color": "black" },
+            { "row": 4, "col": 4, "color": "black" },
+            { "row": 3, "col": 3, "color": "white" }
+          ],
+          "answer": { "row": 4, "col": 3 }
+        },
+        {
+          "title": "断点：先补气",
+          "stones": [
+            { "row": 2, "col": 2, "color": "black" },
+            { "row": 2, "col": 3, "color": "white" },
+            { "row": 3, "col": 2, "color": "white" }
+          ],
+          "answer": { "row": 3, "col": 3 }
+        },
+        {
+          "title": "吃子：提走白子",
+          "stones": [
+            { "row": 1, "col": 1, "color": "white" },
+            { "row": 1, "col": 2, "color": "black" },
+            { "row": 2, "col": 1, "color": "black" }
+          ],
+          "answer": { "row": 2, "col": 2 }
+        },
+        {
+          "title": "占角：抢先落角",
+          "stones": [{ "row": 1, "col": 7, "color": "white" }],
+          "answer": { "row": 0, "col": 8 }
+        },
+        {
+          "title": "虎口：守住空点",
+          "stones": [
+            { "row": 6, "col": 2, "color": "black" },
+            { "row": 6, "col": 4, "color": "black" },
+            { "row": 5, "col": 3, "color": "white" }
+          ],
+          "answer": { "row": 6, "col": 3 }
+        }
+      ]
+    },
+    {
+      "id": "intermediate",
+      "name": "基础",
+      "puzzles": [
+        {
+          "title": "逃子：白子快没气了",
+          "stones": [
+            { "row": 5, "col": 5, "color": "white" },
+            { "row": 5, "col": 4, "color": "black" },
+            { "row": 4, "col": 5, "color": "black" },
+            { "row": 6, "col": 5, "color": "black" }
+          ],
+          "answer": { "row": 5, "col": 6 }
+        },
+        {
+          "title": "切断：阻止白子连起来",
+          "stones": [
+            { "row": 3, "col": 6, "color": "white" },
+            { "row": 4, "col": 6, "color": "white" },
+            { "row": 3, "col": 5, "color": "black" }
+          ],
+          "answer": { "row": 4, "col": 5 }
+        },
+        {
+          "title": "连接：跨一格连起来",
+          "stones": [
+            { "row": 6, "col": 6, "color": "black" },
+            { "row": 6, "col": 8, "color": "black" },
+            { "row": 5, "col": 7, "color": "white" }
+          ],
+          "answer": { "row": 6, "col": 7 }
+        },
+        {
+          "title": "断点：切开白子",
+          "stones": [
+            { "row": 2, "col": 2, "color": "white" },
+            { "row": 2, "col": 3, "color": "white" },
+            { "row": 3, "col": 2, "color": "black" }
+          ],
+          "answer": { "row": 3, "col": 3 }
+        },
+        {
+          "title": "连接：抢救一条线",
+          "stones": [
+            { "row": 1, "col": 4, "color": "black" },
+            { "row": 3, "col": 4, "color": "black" },
+            { "row": 2, "col": 4, "color": "white" }
+          ],
+          "answer": { "row": 2, "col": 5 }
+        }
+      ]
+    },
+    {
+      "id": "advanced",
+      "name": "进阶",
+      "puzzles": [
+        {
+          "title": "死活：救活黑子",
+          "stones": [
+            { "row": 4, "col": 4, "color": "black" },
+            { "row": 4, "col": 5, "color": "white" },
+            { "row": 5, "col": 4, "color": "white" },
+            { "row": 3, "col": 4, "color": "white" }
+          ],
+          "answer": { "row": 5, "col": 5 }
+        },
+        {
+          "title": "死活：一手吃",
+          "stones": [
+            { "row": 2, "col": 6, "color": "white" },
+            { "row": 1, "col": 6, "color": "black" },
+            { "row": 2, "col": 5, "color": "black" },
+            { "row": 3, "col": 6, "color": "black" }
+          ],
+          "answer": { "row": 2, "col": 7 }
+        },
+        {
+          "title": "劫争：制造劫",
+          "stones": [
+            { "row": 4, "col": 6, "color": "white" },
+            { "row": 4, "col": 5, "color": "black" },
+            { "row": 3, "col": 6, "color": "black" },
+            { "row": 5, "col": 6, "color": "black" }
+          ],
+          "answer": { "row": 4, "col": 7 }
+        },
+        {
+          "title": "劫争：抢先打劫",
+          "stones": [
+            { "row": 5, "col": 2, "color": "white" },
+            { "row": 5, "col": 3, "color": "black" },
+            { "row": 4, "col": 2, "color": "black" },
+            { "row": 6, "col": 2, "color": "black" }
+          ],
+          "answer": { "row": 5, "col": 1 }
+        },
+        {
+          "title": "死活：做眼",
+          "stones": [
+            { "row": 7, "col": 4, "color": "black" },
+            { "row": 7, "col": 5, "color": "black" },
+            { "row": 6, "col": 4, "color": "white" },
+            { "row": 6, "col": 5, "color": "white" }
+          ],
+          "answer": { "row": 8, "col": 4 }
+        }
+      ]
+    }
+  ]
+}

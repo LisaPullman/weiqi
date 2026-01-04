@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>foxai · 歪歪的围棋乐园</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="app-header">
+        <button class="icon-btn" aria-label="返回">
+          <span aria-hidden="true">←</span>
+        </button>
+        <div class="brand">
+          <span class="brand-dot"></span>
+          <span>foxai 围棋乐园</span>
+        </div>
+        <div class="header-meta">
+          <span class="pill">歪歪 · 6岁</span>
+          <span class="pill">段位：启蒙 1 级</span>
+        </div>
+      </header>
+
+      <main class="app-main">
+        <section class="board-zone">
+          <div class="board-card">
+            <div class="board-header">
+              <div>
+                <h1>今天的任务：围住小狐狸</h1>
+                <p>
+                  歪歪，点一点棋盘，让黑子围住白子！每次成功会获得星星奖励。
+                </p>
+                <div class="score-line" id="scoreLine">黑 0 · 白 0</div>
+              </div>
+              <div class="board-stats">
+                <div class="stat">
+                  <span class="stat-label">胜利</span>
+                  <span class="stat-value" id="winCount">0</span>
+                </div>
+                <div class="stat">
+                  <span class="stat-label">星星</span>
+                  <span class="stat-value" id="starCount">0</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="board-wrap">
+              <div class="board" id="board" aria-label="围棋棋盘"></div>
+              <div class="board-overlay">
+                <div class="stone-guide">
+                  <span class="stone black"></span>
+                  <span>轮到歪歪（黑）</span>
+                </div>
+                <div class="stone-guide">
+                  <span class="stone white"></span>
+                  <span>小狐狸（白）</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="board-actions">
+              <button class="primary-btn" id="hintBtn">语音提示</button>
+              <button class="ghost-btn" id="resetBtn">重新开始</button>
+              <button class="ghost-btn" id="passBtn">跳过</button>
+              <button class="ghost-btn" id="reviewBtn">点目复盘</button>
+              <button class="ghost-btn" id="rewardBtn">奖励小游戏</button>
+            </div>
+
+            <div class="puzzle-panel" id="puzzlePanel">
+              <div>
+                <h3>题库闯关</h3>
+                <p id="puzzleText">选择题目开始挑战。</p>
+                <div class="puzzle-meta">
+                  <label for="puzzleLevelSelect">题库等级</label>
+                  <select id="puzzleLevelSelect"></select>
+                </div>
+              </div>
+              <div class="puzzle-actions">
+                <button class="secondary-btn" id="prevPuzzleBtn">上一题</button>
+                <button class="secondary-btn" id="nextPuzzleBtn">下一题</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <aside class="side-zone">
+          <div class="side-card">
+            <h2>模式选择</h2>
+            <div class="mode-grid">
+              <button class="mode-chip active" data-mode="learn">启蒙课</button>
+              <button class="mode-chip" data-mode="puzzle">题库闯关</button>
+              <button class="mode-chip" data-mode="battle">对战练习</button>
+              <button class="mode-chip" data-mode="story">故事关卡</button>
+              <button class="mode-chip" data-mode="reward">奖励乐园</button>
+            </div>
+          </div>
+
+          <div class="side-card">
+            <h2>棋力等级</h2>
+            <div class="level-select">
+              <label for="aiLevel">电脑难度</label>
+              <select id="aiLevel">
+                <option value="1">启蒙 1</option>
+                <option value="2">启蒙 2</option>
+                <option value="3" selected>小棋童 1</option>
+                <option value="4">小棋童 2</option>
+                <option value="5">小棋士 1</option>
+              </select>
+            </div>
+            <p class="muted">
+              难度越高，电脑更善于吃子与防守。题库模式不受影响。
+            </p>
+            <div class="file-import">
+              <label for="puzzleFile">导入题库 JSON</label>
+              <input type="file" id="puzzleFile" accept="application/json" />
+            </div>
+          </div>
+
+          <div class="side-card mascot-card">
+            <div>
+              <h3>小狐狸教练</h3>
+              <p id="coachLine">
+                歪歪，今天我们练“逃子”。我会用语音提醒你下一步哦！
+              </p>
+              <button class="secondary-btn" id="coachBtn">我听懂啦！</button>
+            </div>
+            <div class="mascot">
+              <div class="fox-ear"></div>
+              <div class="fox-face">
+                <span class="fox-eye"></span>
+                <span class="fox-eye"></span>
+                <span class="fox-nose"></span>
+              </div>
+              <div class="fox-tail"></div>
+            </div>
+          </div>
+
+          <div class="side-card level-card">
+            <div class="level-header">
+              <h3>关卡进度</h3>
+              <span class="pill">已完成 <span id="levelDone">1</span>/10</span>
+            </div>
+            <div class="level-grid" id="levelGrid"></div>
+          </div>
+
+          <div class="side-card gallery-card">
+            <h3>灵感参考</h3>
+            <div class="gallery">
+              <img src="./1.jpg" alt="参考界面1" />
+              <img src="./2.jpg" alt="参考界面2" />
+              <img src="./3.jpg" alt="参考界面3" />
+            </div>
+          </div>
+        </aside>
+      </main>
+    </div>
+
+    <section class="reward-modal" id="rewardModal" aria-hidden="true">
+      <div class="reward-panel">
+        <div class="reward-header">
+          <h2>星星捕捉</h2>
+          <p>点亮 5 颗星星，解锁小狐狸贴纸！</p>
+        </div>
+        <div class="reward-tabs">
+          <button class="tab-btn active" data-game="stars">星星捕捉</button>
+          <button class="tab-btn" data-game="memory">连连乐</button>
+        </div>
+        <div class="reward-game" id="rewardGame"></div>
+        <div class="reward-footer">
+          <button class="ghost-btn" id="closeRewardBtn">我玩够啦</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="review-modal" id="reviewModal" aria-hidden="true">
+      <div class="review-panel">
+        <div class="review-header">
+          <h2>点目复盘</h2>
+          <p id="reviewSummary">黑 0 · 白 0</p>
+        </div>
+        <div class="review-body">
+          <div class="review-board" id="reviewBoard"></div>
+          <div class="review-info">
+            <div class="review-item" id="reviewDetail"></div>
+            <p class="muted">
+              说明：棋子 + 围地 = 总分。中立区域不计分。
+            </p>
+          </div>
+        </div>
+        <div class="review-footer">
+          <button class="ghost-btn" id="closeReviewBtn">我知道啦</button>
+        </div>
+      </div>
+    </section>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
