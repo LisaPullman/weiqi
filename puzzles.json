@@ -295,6 +295,111 @@
             { "row": 3, "col": 5, "color": "white" }
           ],
           "answer": { "row": 5, "col": 3 }
+        },
+        {
+          "title": "死活：角上做活",
+          "stones": [
+            { "row": 7, "col": 7, "color": "black" },
+            { "row": 7, "col": 8, "color": "black" },
+            { "row": 8, "col": 7, "color": "white" },
+            { "row": 8, "col": 8, "color": "white" },
+            { "row": 6, "col": 7, "color": "white" },
+            { "row": 6, "col": 8, "color": "white" }
+          ],
+          "answer": { "row": 8, "col": 6 }
+        },
+        {
+          "title": "手筋：挖",
+          "stones": [
+            { "row": 4, "col": 4, "color": "black" },
+            { "row": 4, "col": 5, "color": "black" },
+            { "row": 5, "col": 4, "color": "white" },
+            { "row": 5, "col": 5, "color": "white" }
+          ],
+          "answer": { "row": 4, "col": 6 }
+        },
+        {
+          "title": "死活：点眼",
+          "stones": [
+            { "row": 4, "col": 4, "color": "black" },
+            { "row": 4, "col": 5, "color": "black" },
+            { "row": 5, "col": 4, "color": "black" },
+            { "row": 5, "col": 5, "color": "black" },
+            { "row": 3, "col": 4, "color": "white" },
+            { "row": 3, "col": 5, "color": "white" },
+            { "row": 4, "col": 6, "color": "white" }
+          ],
+          "answer": { "row": 4, "col": 3 }
+        },
+        {
+          "title": "对杀：有眼杀无眼",
+          "stones": [
+            { "row": 4, "col": 4, "color": "black" },
+            { "row": 4, "col": 5, "color": "white" },
+            { "row": 5, "col": 4, "color": "black" },
+            { "row": 5, "col": 5, "color": "white" },
+            { "row": 3, "col": 4, "color": "white" },
+            { "row": 4, "col": 3, "color": "white" }
+          ],
+          "answer": { "row": 5, "col": 3 }
+        },
+        {
+          "title": "死活：破眼",
+          "stones": [
+            { "row": 4, "col": 4, "color": "white" },
+            { "row": 4, "col": 5, "color": "white" },
+            { "row": 5, "col": 4, "color": "white" },
+            { "row": 5, "col": 5, "color": "black" },
+            { "row": 3, "col": 4, "color": "black" },
+            { "row": 4, "col": 6, "color": "black" }
+          ],
+          "answer": { "row": 5, "col": 3 }
+        },
+        {
+          "title": "手筋：征子",
+          "stones": [
+            { "row": 3, "col": 3, "color": "white" },
+            { "row": 3, "col": 4, "color": "black" },
+            { "row": 4, "col": 4, "color": "black" },
+            { "row": 5, "col": 4, "color": "black" }
+          ],
+          "answer": { "row": 2, "col": 5 }
+        },
+        {
+          "title": "死活：盘角曲四",
+          "stones": [
+            { "row": 6, "col": 6, "color": "black" },
+            { "row": 6, "col": 7, "color": "black" },
+            { "row": 7, "col": 6, "color": "black" },
+            { "row": 7, "col": 7, "color": "black" },
+            { "row": 6, "col": 8, "color": "white" },
+            { "row": 8, "col": 6, "color": "white" },
+            { "row": 8, "col": 7, "color": "white" }
+          ],
+          "answer": { "row": 7, "col": 8 }
+        },
+        {
+          "title": "手筋：打二还一",
+          "stones": [
+            { "row": 4, "col": 4, "color": "black" },
+            { "row": 4, "col": 5, "color": "white" },
+            { "row": 5, "col": 4, "color": "white" },
+            { "row": 3, "col": 4, "color": "white" },
+            { "row": 5, "col": 5, "color": "black" }
+          ],
+          "answer": { "row": 4, "col": 3 }
+        },
+        {
+          "title": "死活：角部死活",
+          "stones": [
+            { "row": 6, "col": 6, "color": "black" },
+            { "row": 6, "col": 7, "color": "black" },
+            { "row": 7, "col": 6, "color": "black" },
+            { "row": 7, "col": 7, "color": "white" },
+            { "row": 6, "col": 8, "color": "white" },
+            { "row": 8, "col": 6, "color": "white" }
+          ],
+          "answer": { "row": 8, "col": 7 }
         }
       ]
     }

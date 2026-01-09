@@ -20,6 +20,12 @@
           <span>foxai 围棋乐园</span>
         </div>
         <div class="header-meta">
+          <button class="icon-btn theme-toggle" id="themeToggle" aria-label="切换主题" title="切换暗色/亮色主题">
+            <span aria-hidden="true">🌙</span>
+          </button>
+          <button class="icon-btn sound-toggle" id="soundToggle" aria-label="音效开关" title="开关音效">
+            <span aria-hidden="true">🔊</span>
+          </button>
           <span class="pill">歪歪 · 6岁</span>
           <span class="pill">段位：启蒙 1 级</span>
         </div>
@@ -69,6 +75,12 @@
               <button class="ghost-btn" id="passBtn">跳过</button>
               <button class="ghost-btn" id="reviewBtn">点目复盘</button>
               <button class="ghost-btn" id="rewardBtn">奖励小游戏</button>
+              <button class="secondary-btn" id="tutorialBtn">新手教程</button>
+              <button class="secondary-btn" id="replayBtn">棋谱回放</button>
+              <button class="secondary-btn" id="exportBtn">导出棋谱</button>
+              <button class="secondary-btn" id="importBtn">导入棋谱</button>
+              <button class="secondary-btn" id="analyzeBtn">形势分析</button>
+              <button class="secondary-btn" id="shareBtn">分享棋谱</button>
             </div>
 
             <div class="puzzle-panel" id="puzzlePanel">
@@ -85,6 +97,43 @@
                 <button class="secondary-btn" id="nextPuzzleBtn">下一题</button>
               </div>
             </div>
+
+            <div class="endgame-panel" id="endgamePanel" style="display: none;">
+              <div>
+                <h3>残局挑战</h3>
+                <p id="endgameText">准备好挑战高难度残局了吗？</p>
+                <div class="endgame-stats">
+                  <div class="endgame-stat">
+                    <span class="stat-label">生命值</span>
+                    <span class="stat-value" id="endgameLives">❤️❤️❤️</span>
+                  </div>
+                  <div class="endgame-stat">
+                    <span class="stat-label">连击</span>
+                    <span class="stat-value" id="endgameCombo">0</span>
+                  </div>
+                  <div class="endgame-stat">
+                    <span class="stat-label">得分</span>
+                    <span class="stat-value" id="endgameScore">0</span>
+                  </div>
+                  <div class="endgame-stat">
+                    <span class="stat-label">倒计时</span>
+                    <span class="stat-value" id="endgameTimer">60s</span>
+                  </div>
+                </div>
+                <div class="endgame-difficulty">
+                  <label for="endgameLevelSelect">残局难度</label>
+                  <select id="endgameLevelSelect">
+                    <option value="1">初级残局</option>
+                    <option value="2">中级残局</option>
+                    <option value="3">高级残局</option>
+                  </select>
+                </div>
+              </div>
+              <div class="endgame-actions">
+                <button class="primary-btn" id="startEndgameBtn">开始挑战</button>
+                <button class="ghost-btn" id="giveUpEndgameBtn">放弃</button>
+              </div>
+            </div>
           </div>
         </section>
 
@@ -95,7 +144,9 @@
               <button class="mode-chip active" data-mode="learn">启蒙课</button>
               <button class="mode-chip" data-mode="puzzle">题库闯关</button>
               <button class="mode-chip" data-mode="battle">对战练习</button>
+              <button class="mode-chip" data-mode="local">本地对战</button>
               <button class="mode-chip" data-mode="story">故事关卡</button>
+              <button class="mode-chip" data-mode="endgame">残局挑战</button>
               <button class="mode-chip" data-mode="reward">奖励乐园</button>
             </div>
           </div>
@@ -112,6 +163,15 @@
                 <option value="5">小棋士 1</option>
               </select>
             </div>
+            <div class="level-select">
+              <label for="boardSize">棋盘大小</label>
+              <select id="boardSize">
+                <option value="5" selected>5 × 5（入门）</option>
+                <option value="9">9 × 9（标准）</option>
+                <option value="13">13 × 13（中级）</option>
+                <option value="19">19 × 19（专业）</option>
+              </select>
+            </div>
             <p class="muted">
               难度越高，电脑更善于吃子与防守。题库模式不受影响。
             </p>
@@ -125,7 +185,7 @@
             <div>
               <h3>小狐狸教练</h3>
               <p id="coachLine">
-                歪歪，今天我们练“逃子”。我会用语音提醒你下一步哦！
+                歪歪，今天我们练"逃子"。我会用语音提醒你下一步哦！
               </p>
               <button class="secondary-btn" id="coachBtn">我听懂啦！</button>
             </div>
@@ -137,6 +197,39 @@
                 <span class="fox-nose"></span>
               </div>
               <div class="fox-tail"></div>
+            </div>
+          </div>
+
+          <div class="side-card stats-card">
+            <h3>📊 学习统计</h3>
+            <div class="stats-grid">
+              <div class="stat-item">
+                <span class="stat-label">总对局</span>
+                <span class="stat-number" id="totalGames">0</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">胜率</span>
+                <span class="stat-number" id="winRate">0%</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">答题数</span>
+                <span class="stat-number" id="totalPuzzles">0</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">连对</span>
+                <span class="stat-number" id="currentStreak">0</span>
+              </div>
+            </div>
+            <div class="achievements" id="achievements">
+              <h4>🏆 成就</h4>
+              <div class="achievement-list" id="achievementList">
+                <span class="achievement-badge locked" title="完成第一局">🎯</span>
+                <span class="achievement-badge locked" title="连胜3局">🔥</span>
+                <span class="achievement-badge locked" title="答题正确50题">📚</span>
+                <span class="achievement-badge locked" title="收集100颗星">⭐</span>
+                <span class="achievement-badge locked" title="达到小棋士">🎓</span>
+                <span class="achievement-badge locked" title="完成所有教程">🎨</span>
+              </div>
             </div>
           </div>
 
@@ -156,9 +249,36 @@
               <img src="./3.jpg" alt="参考界面3" />
             </div>
           </div>
+
+          <!-- 每日挑战任务 -->
+          <div class="daily-challenge-panel">
+            <div class="daily-challenge-header">
+              <div class="daily-challenge-title">
+                <span>🎯</span>
+                <span>每日挑战</span>
+              </div>
+              <div class="daily-challenge-timer" id="dailyChallengeTimer">⏰ 23:59:59</div>
+            </div>
+            <div class="daily-challenge-list" id="dailyChallengeList">
+              <!-- 动态生成 -->
+            </div>
+            <div class="daily-challenge-streak">
+              <span class="daily-challenge-streak-icon">🔥</span>
+              <span class="daily-challenge-streak-text">已连续打卡 <span id="challengeStreak">0</span> 天</span>
+            </div>
+          </div>
+
+          <!-- 家长监控入口 -->
+          <button class="parent-dashboard-toggle" id="parentDashboardToggle">
+            <span class="parent-toggle-icon">👨‍👩‍👧‍👦</span>
+            <span class="parent-toggle-text">家长中心</span>
+          </button>
         </aside>
       </main>
     </div>
+
+    <!-- 隐藏的文件输入用于导入棋谱 -->
+    <input type="file" id="sgfFileInput" accept=".sgf" style="display: none;" />
 
     <section class="reward-modal" id="rewardModal" aria-hidden="true">
       <div class="reward-panel">
@@ -197,6 +317,340 @@
         </div>
       </div>
     </section>
+
+    <section class="tutorial-modal" id="tutorialModal" aria-hidden="true">
+      <div class="tutorial-panel">
+        <div class="tutorial-header">
+          <h2>围棋新手教程</h2>
+          <div class="tutorial-progress">
+            <span id="tutorialStep">1</span> / <span id="tutorialTotal">5</span>
+          </div>
+        </div>
+        <div class="tutorial-content" id="tutorialContent">
+          <h3>什么是围棋？</h3>
+          <p>围棋是一个两人对弈的策略游戏。歪歪执黑先下，小狐狸执白后下。</p>
+          <div class="tutorial-tip">
+            <span class="tip-icon">💡</span>
+            <span>目标：围住更多的地盘，保护自己的棋子不被吃掉。</span>
+          </div>
+        </div>
+        <div class="tutorial-footer">
+          <button class="ghost-btn" id="skipTutorialBtn">跳过教程</button>
+          <button class="primary-btn" id="nextTutorialBtn">下一步</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="replay-modal" id="replayModal" aria-hidden="true">
+      <div class="replay-panel">
+        <div class="replay-header">
+          <h2>棋谱回放</h2>
+          <div class="replay-controls">
+            <button class="control-btn" id="replayFirstBtn" title="第一步">⏮</button>
+            <button class="control-btn" id="replayPrevBtn" title="上一步">◀</button>
+            <button class="control-btn" id="replayPlayBtn" title="播放/暂停">▶</button>
+            <button class="control-btn" id="replayNextBtn" title="下一步">▶</button>
+            <button class="control-btn" id="replayLastBtn" title="最后一步">⏭</button>
+          </div>
+        </div>
+        <div class="replay-info">
+          <span>第 <strong id="replayStep">0</strong> / <span id="replayTotal">0</span> 手</span>
+          <span id="replayPlayer">黑方落子</span>
+        </div>
+        <div class="replay-board-container">
+          <div class="replay-game-board" id="replayBoard"></div>
+        </div>
+        <div class="replay-footer">
+          <button class="ghost-btn" id="closeReplayBtn">关闭</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="analyze-modal" id="analyzeModal" aria-hidden="true">
+      <div class="analyze-panel">
+        <div class="analyze-header">
+          <h2>AI 形势分析</h2>
+        </div>
+        <div class="analyze-content">
+          <div class="analyze-score">
+            <div class="score-item">
+              <span class="score-label">黑方优势</span>
+              <div class="score-bar">
+                <div class="score-fill black" id="blackAdvantage" style="width: 50%"></div>
+              </div>
+              <span class="score-value" id="blackAdvantageValue">50%</span>
+            </div>
+            <div class="score-item">
+              <span class="score-label">白方优势</span>
+              <div class="score-bar">
+                <div class="score-fill white" id="whiteAdvantage" style="width: 50%"></div>
+              </div>
+              <span class="score-value" id="whiteAdvantageValue">50%</span>
+            </div>
+          </div>
+          <div class="analyze-details" id="analyzeDetails">
+            <h4>分析详情</h4>
+            <div class="analyze-metrics">
+              <div class="metric">
+                <span class="metric-label">黑方棋子</span>
+                <span class="metric-value" id="blackStones">0</span>
+              </div>
+              <div class="metric">
+                <span class="metric-label">白方棋子</span>
+                <span class="metric-value" id="whiteStones">0</span>
+              </div>
+              <div class="metric">
+                <span class="metric-label">黑方实地</span>
+                <span class="metric-value" id="blackTerritory">0</span>
+              </div>
+              <div class="metric">
+                <span class="metric-label">白方实地</span>
+                <span class="metric-value" id="whiteTerritory">0</span>
+              </div>
+              <div class="metric">
+                <span class="metric-label">手数</span>
+                <span class="metric-value" id="totalMoves">0</span>
+              </div>
+            </div>
+            <div class="analyze-suggestion" id="analyzeSuggestion">
+              <h4>AI 建议</h4>
+              <p id="suggestionText">分析中...</p>
+            </div>
+          </div>
+        </div>
+        <div class="analyze-footer">
+          <button class="ghost-btn" id="closeAnalyzeBtn">关闭</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 快捷操作面板 -->
+    <div class="quick-actions-panel">
+      <button class="quick-actions-toggle" id="quickActionsToggle" aria-label="快捷操作">
+        <span>+</span>
+      </button>
+      <div class="quick-actions-menu" id="quickActionsMenu">
+        <button class="quick-action-btn" id="quickUndo" data-tooltip="撤销">↩️</button>
+        <button class="quick-action-btn" id="quickReset" data-tooltip="重新开始">🔄</button>
+        <button class="quick-action-btn" id="quickHint" data-tooltip="提示">💡</button>
+        <button class="quick-action-btn" id="quickPass" data-tooltip="跳过">⏭️</button>
+        <button class="quick-action-btn" id="quickSave" data-tooltip="保存进度">💾</button>
+        <button class="quick-action-btn" id="quickHistory" data-tooltip="历史记录">📜</button>
+      </div>
+    </div>
+
+    <!-- 游戏进度保存提示 -->
+    <div class="save-indicator" id="saveIndicator">✓ 游戏已保存</div>
+
+    <!-- 游戏历史记录弹窗 -->
+    <section class="replay-modal" id="historyModal" aria-hidden="true">
+      <div class="replay-panel">
+        <div class="replay-header">
+          <h2>游戏历史</h2>
+          <button class="ghost-btn" id="closeHistoryBtn">关闭</button>
+        </div>
+        <div class="replay-info">
+          <p>选择一局游戏进行复盘</p>
+        </div>
+        <div class="game-history-grid" id="gameHistoryGrid">
+          <!-- 历史记录动态生成 -->
+        </div>
+      </div>
+    </section>
+
+    <!-- 成就解锁动画 -->
+    <div class="achievement-unlock-overlay" id="achievementUnlockOverlay">
+      <div class="achievement-unlock-card">
+        <div class="achievement-unlock-icon" id="achievementUnlockIcon">🏆</div>
+        <div class="achievement-unlock-title" id="achievementUnlockTitle">成就解锁！</div>
+        <div class="achievement-unlock-description" id="achievementUnlockDescription">恭喜你完成挑战</div>
+        <div class="achievement-unlock-stars">
+          <span class="achievement-star">⭐</span>
+          <span class="achievement-star">⭐</span>
+          <span class="achievement-star">⭐</span>
+        </div>
+        <button class="achievement-unlock-button" id="achievementUnlockButton">太棒了！</button>
+      </div>
+    </div>
+
+    <!-- 家长监控面板 -->
+    <section class="parent-dashboard-modal" id="parentDashboardModal" aria-hidden="true">
+      <div class="parent-dashboard-panel">
+        <div class="parent-dashboard-header">
+          <div class="parent-dashboard-title">
+            <span class="parent-dashboard-icon">👨‍👩‍👧‍👦</span>
+            <div>
+              <h2>家长监控中心</h2>
+              <p>孩子的学习进度和统计数据</p>
+            </div>
+          </div>
+          <button class="ghost-btn" id="closeParentDashboardBtn">关闭</button>
+        </div>
+
+        <div class="parent-dashboard-content">
+          <!-- 学习概览 -->
+          <div class="parent-dashboard-section">
+            <h3 class="parent-dashboard-section-title">
+              <span>📊</span>
+              <span>学习概览</span>
+            </h3>
+            <div class="parent-dashboard-stats-grid">
+              <div class="parent-stat-card">
+                <div class="parent-stat-icon">🎮</div>
+                <div class="parent-stat-content">
+                  <div class="parent-stat-label">总对局数</div>
+                  <div class="parent-stat-value" id="parentTotalGames">0</div>
+                </div>
+              </div>
+              <div class="parent-stat-card">
+                <div class="parent-stat-icon">🧩</div>
+                <div class="parent-stat-content">
+                  <div class="parent-stat-label">已完成题目</div>
+                  <div class="parent-stat-value" id="parentTotalPuzzles">0</div>
+                </div>
+              </div>
+              <div class="parent-stat-card">
+                <div class="parent-stat-icon">⏱️</div>
+                <div class="parent-stat-content">
+                  <div class="parent-stat-label">总学习时长</div>
+                  <div class="parent-stat-value" id="parentTotalTime">0分钟</div>
+                </div>
+              </div>
+              <div class="parent-stat-card">
+                <div class="parent-stat-icon">🔥</div>
+                <div class="parent-stat-content">
+                  <div class="parent-stat-label">连续打卡</div>
+                  <div class="parent-stat-value" id="parentStreak">0天</div>
+                </div>
+              </div>
+              <div class="parent-stat-card">
+                <div class="parent-stat-icon">📈</div>
+                <div class="parent-stat-content">
+                  <div class="parent-stat-label">当前段位</div>
+                  <div class="parent-stat-value" id="parentLevel">启蒙 1 级</div>
+                </div>
+              </div>
+              <div class="parent-stat-card">
+                <div class="parent-stat-icon">⭐</div>
+                <div class="parent-stat-content">
+                  <div class="parent-stat-label">收集星星</div>
+                  <div class="parent-stat-value" id="parentStars">0</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 技能分析 -->
+          <div class="parent-dashboard-section">
+            <h3 class="parent-dashboard-section-title">
+              <span>🎯</span>
+              <span>技能分析</span>
+            </h3>
+            <div class="parent-skill-bars">
+              <div class="parent-skill-bar">
+                <div class="parent-skill-info">
+                  <span class="parent-skill-name">对局能力</span>
+                  <span class="parent-skill-percent" id="parentBattleSkill">0%</span>
+                </div>
+                <div class="parent-skill-progress">
+                  <div class="parent-skill-fill" id="parentBattleSkillBar" style="width: 0%"></div>
+                </div>
+              </div>
+              <div class="parent-skill-bar">
+                <div class="parent-skill-info">
+                  <span class="parent-skill-name">解题能力</span>
+                  <span class="parent-skill-percent" id="parentPuzzleSkill">0%</span>
+                </div>
+                <div class="parent-skill-progress">
+                  <div class="parent-skill-fill" id="parentPuzzleSkillBar" style="width: 0%"></div>
+                </div>
+              </div>
+              <div class="parent-skill-bar">
+                <div class="parent-skill-info">
+                  <span class="parent-skill-name">学习一致性</span>
+                  <span class="parent-skill-percent" id="parentConsistency">0%</span>
+                </div>
+                <div class="parent-skill-progress">
+                  <div class="parent-skill-fill" id="parentConsistencyBar" style="width: 0%"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 学习趋势 -->
+          <div class="parent-dashboard-section">
+            <h3 class="parent-dashboard-section-title">
+              <span>📅</span>
+              <span>最近7天学习记录</span>
+            </h3>
+            <div class="parent-activity-chart" id="parentActivityChart">
+              <!-- 动态生成 -->
+            </div>
+          </div>
+
+          <!-- 建议与提醒 -->
+          <div class="parent-dashboard-section">
+            <h3 class="parent-dashboard-section-title">
+              <span>💡</span>
+              <span>学习建议</span>
+            </h3>
+            <div class="parent-suggestions" id="parentSuggestions">
+              <div class="parent-suggestion-item">
+                <span class="parent-suggestion-icon">✓</span>
+                <span class="parent-suggestion-text">继续保持良好的学习习惯！</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 棋谱分享弹窗 -->
+    <section class="share-modal" id="shareModal" aria-hidden="true">
+      <div class="share-panel">
+        <div class="share-header">
+          <h2>📤 分享棋谱</h2>
+          <p>将你的精彩对局分享给朋友</p>
+        </div>
+        <div class="share-tabs">
+          <button class="share-tab active" data-share-tab="link">链接分享</button>
+          <button class="share-tab" data-share-tab="code">分享码</button>
+        </div>
+
+        <!-- 链接分享 -->
+        <div class="share-content active" id="shareLinkContent">
+          <div class="share-url-box">
+            <label class="share-url-label">分享链接</label>
+            <input type="text" class="share-url-input" id="shareUrlInput" readonly />
+          </div>
+          <div class="share-actions">
+            <button class="share-btn primary" id="copyShareUrlBtn">
+              <span>📋</span>
+              <span>复制链接</span>
+            </button>
+            <button class="share-btn secondary" id="closeShareBtn">关闭</button>
+          </div>
+        </div>
+
+        <!-- 分享码 -->
+        <div class="share-content" id="shareCodeContent">
+          <div class="share-code-box">
+            <label class="share-code-label">分享码</label>
+            <div class="share-code-display" id="shareCodeDisplay">点击生成</div>
+          </div>
+          <div class="share-actions">
+            <button class="share-btn primary" id="copyShareCodeBtn">
+              <span>📋</span>
+              <span>复制分享码</span>
+            </button>
+            <button class="share-btn secondary" id="closeShareBtn2">关闭</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 复制成功提示 -->
+    <div class="share-copied-toast" id="shareCopiedToast">✓ 已复制到剪贴板</div>
 
     <script src="./app.js"></script>
   </body>
