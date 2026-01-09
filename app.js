@@ -66,22 +66,36 @@ const DOM = {
 };
 
 // ========== 音效系统 ==========
-const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+let audioContext = null;
 let soundEnabled = true;
+
+function getAudioContext() {
+  if (!audioContext) {
+    try {
+      audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    } catch (e) {
+      console.log("[Audio] AudioContext init failed:", e);
+      audioContext = null;
+    }
+  }
+  return audioContext;
+}
 
 function playStoneSound() {
   if (!soundEnabled) return;
   try {
-    const oscillator = audioContext.createOscillator();
-    const gainNode = audioContext.createGain();
+    const context = getAudioContext();
+    if (!context) return;
+    const oscillator = context.createOscillator();
+    const gainNode = context.createGain();
     oscillator.connect(gainNode);
-    gainNode.connect(audioContext.destination);
+    gainNode.connect(context.destination);
     oscillator.frequency.value = 800;
     oscillator.type = 'sine';
-    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
-    oscillator.start(audioContext.currentTime);
-    oscillator.stop(audioContext.currentTime + 0.1);
+    gainNode.gain.setValueAtTime(0.3, context.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, context.currentTime + 0.1);
+    oscillator.start(context.currentTime);
+    oscillator.stop(context.currentTime + 0.1);
   } catch (e) {
     console.log('[Audio] Error playing stone sound:', e);
   }
@@ -90,17 +104,19 @@ function playStoneSound() {
 function playCaptureSound() {
   if (!soundEnabled) return;
   try {
-    const oscillator = audioContext.createOscillator();
-    const gainNode = audioContext.createGain();
+    const context = getAudioContext();
+    if (!context) return;
+    const oscillator = context.createOscillator();
+    const gainNode = context.createGain();
     oscillator.connect(gainNode);
-    gainNode.connect(audioContext.destination);
-    oscillator.frequency.setValueAtTime(600, audioContext.currentTime);
-    oscillator.frequency.exponentialRampToValueAtTime(1200, audioContext.currentTime + 0.15);
+    gainNode.connect(context.destination);
+    oscillator.frequency.setValueAtTime(600, context.currentTime);
+    oscillator.frequency.exponentialRampToValueAtTime(1200, context.currentTime + 0.15);
     oscillator.type = 'triangle';
-    gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
-    oscillator.start(audioContext.currentTime);
-    oscillator.stop(audioContext.currentTime + 0.2);
+    gainNode.gain.setValueAtTime(0.2, context.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, context.currentTime + 0.2);
+    oscillator.start(context.currentTime);
+    oscillator.stop(context.currentTime + 0.2);
   } catch (e) {
     console.log('[Audio] Error playing capture sound:', e);
   }
@@ -109,15 +125,17 @@ function playCaptureSound() {
 function playWinSound() {
   if (!soundEnabled) return;
   try {
+    const context = getAudioContext();
+    if (!context) return;
     const notes = [523.25, 659.25, 783.99, 1046.50];
     notes.forEach((freq, i) => {
-      const oscillator = audioContext.createOscillator();
-      const gainNode = audioContext.createGain();
+      const oscillator = context.createOscillator();
+      const gainNode = context.createGain();
       oscillator.connect(gainNode);
-      gainNode.connect(audioContext.destination);
+      gainNode.connect(context.destination);
       oscillator.frequency.value = freq;
       oscillator.type = 'sine';
-      const startTime = audioContext.currentTime + i * 0.15;
+      const startTime = context.currentTime + i * 0.15;
       gainNode.gain.setValueAtTime(0, startTime);
       gainNode.gain.linearRampToValueAtTime(0.2, startTime + 0.05);
       gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + 0.3);
@@ -132,16 +150,18 @@ function playWinSound() {
 function playErrorSound() {
   if (!soundEnabled) return;
   try {
-    const oscillator = audioContext.createOscillator();
-    const gainNode = audioContext.createGain();
+    const context = getAudioContext();
+    if (!context) return;
+    const oscillator = context.createOscillator();
+    const gainNode = context.createGain();
     oscillator.connect(gainNode);
-    gainNode.connect(audioContext.destination);
+    gainNode.connect(context.destination);
     oscillator.frequency.value = 200;
     oscillator.type = 'sawtooth';
-    gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.15);
-    oscillator.start(audioContext.currentTime);
-    oscillator.stop(audioContext.currentTime + 0.15);
+    gainNode.gain.setValueAtTime(0.2, context.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, context.currentTime + 0.15);
+    oscillator.start(context.currentTime);
+    oscillator.stop(context.currentTime + 0.15);
   } catch (e) {
     console.log('[Audio] Error playing error sound:', e);
   }
@@ -150,15 +170,17 @@ function playErrorSound() {
 function playPuzzleCorrectSound() {
   if (!soundEnabled) return;
   try {
+    const context = getAudioContext();
+    if (!context) return;
     const notes = [783.99, 1046.50];
     notes.forEach((freq, i) => {
-      const oscillator = audioContext.createOscillator();
-      const gainNode = audioContext.createGain();
+      const oscillator = context.createOscillator();
+      const gainNode = context.createGain();
       oscillator.connect(gainNode);
-      gainNode.connect(audioContext.destination);
+      gainNode.connect(context.destination);
       oscillator.frequency.value = freq;
       oscillator.type = 'sine';
-      const startTime = audioContext.currentTime + i * 0.1;
+      const startTime = context.currentTime + i * 0.1;
       gainNode.gain.setValueAtTime(0, startTime);
       gainNode.gain.linearRampToValueAtTime(0.25, startTime + 0.05);
       gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + 0.25);
@@ -444,7 +466,7 @@ function loadState() {
   if (saved) {
     state = { ...state, ...JSON.parse(saved) };
   }
-  aiLevelSelect.value = String(state.aiLevel || 3);
+  DOM.aiLevelSelect.value = String(state.aiLevel || 3);
   updateProgress();
   renderLevels();
 }
@@ -1821,14 +1843,14 @@ function giveUpEndgame() {
 }
 
 function updatePuzzleLevels() {
-  puzzleLevelSelect.innerHTML = "";
+  DOM.puzzleLevelSelect.innerHTML = "";
   puzzleData.levels.forEach((level, index) => {
     const option = document.createElement("option");
     option.value = String(index);
     option.textContent = `${level.name}（${level.puzzles.length}题）`;
-    puzzleLevelSelect.appendChild(option);
+    DOM.puzzleLevelSelect.appendChild(option);
   });
-  puzzleLevelSelect.value = String(state.puzzleLevel || 0);
+  DOM.puzzleLevelSelect.value = String(state.puzzleLevel || 0);
 }
 
 async function loadPuzzleData() {
@@ -3163,7 +3185,6 @@ function saveGameProgress() {
   try {
     localStorage.setItem(GAME_HISTORY_KEY, JSON.stringify(history));
     showSaveIndicator();
-    speak("游戏进度已保存");
   } catch (error) {
     console.error("保存游戏失败:", error);
     speak("保存失败，存储空间不足");
