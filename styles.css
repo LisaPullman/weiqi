@@ -966,20 +966,6 @@ body {
   place-items: center;
 }
 
-.gallery {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 8px;
-  margin-top: 10px;
-}
-
-.gallery img {
-  width: 100%;
-  border-radius: 12px;
-  object-fit: cover;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
-}
-
 .reward-modal {
   position: fixed;
   inset: 0;

@@ -46,7 +46,6 @@ weiqi/
 ├── styles.css      # 样式与视觉系统
 ├── puzzles.json    # 题库数据
 ├── README.md       # 说明文档
-└── 1.jpg, 2.jpg, 3.jpg  # 视觉参考图
 ```
 
 ## 快速开始

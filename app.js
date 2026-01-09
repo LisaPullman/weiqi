@@ -1885,9 +1885,6 @@ function renderReviewBoard(map, boardData) {
 function bindActions() {
   document.getElementById("undoBtn").addEventListener("click", undoMove);
 
-  // 主题切换按钮
-  document.getElementById("themeToggle").addEventListener("click", toggleTheme);
-
   // 音效开关按钮
   document.getElementById("soundToggle").addEventListener("click", toggleSound);
 
@@ -3056,6 +3053,12 @@ function initTheme() {
   // 从 localStorage 读取主题设置
   const savedTheme = localStorage.getItem("foxai-theme") || "light";
   setTheme(savedTheme);
+
+  const themeToggleBtn = document.getElementById("themeToggle");
+  if (themeToggleBtn && !themeToggleBtn.dataset.bound) {
+    themeToggleBtn.addEventListener("click", toggleTheme);
+    themeToggleBtn.dataset.bound = "true";
+  }
 }
 
 function setTheme(theme) {
@@ -4109,7 +4112,7 @@ function showLearningPathRecommendation() {
   }
 
   // 创建推荐卡片
-  const sidebar = document.querySelector(".sidebar");
+  const sidebar = document.querySelector(".side-zone");
   if (!sidebar) return;
 
   // 移除旧的推荐卡片
