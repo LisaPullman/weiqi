@@ -2219,6 +2219,11 @@ function bindActions() {
   document.getElementById("replayNextBtn").addEventListener("click", replayStepForward);
   document.getElementById("replayLastBtn").addEventListener("click", () => replayGoTo(state.moveHistory.length));
 
+  // Replay comment system
+  document.getElementById("replayCommentBtn").addEventListener("click", openCommentPanel);
+  document.getElementById("closeCommentPanel").addEventListener("click", closeCommentPanel);
+  document.getElementById("submitCommentBtn").addEventListener("click", addComment);
+
   // Endgame challenge buttons
   DOM.startEndgameBtn.addEventListener("click", startEndgameChallenge);
   DOM.giveUpEndgameBtn.addEventListener("click", giveUpEndgame);
@@ -2523,6 +2528,222 @@ function toggleReplayPlay() {
   }
 }
 
+// ========== 棋谱评论标注系统 ==========
+
+const GAME_COMMENTS_KEY = "foxai-game-comments";
+let gameComments = {}; // 存储当前游戏的评论 { moveNumber: { text, mark, timestamp } }
+
+/**
+ * 加载游戏评论
+ */
+function loadGameComments() {
+  try {
+    const saved = localStorage.getItem(GAME_COMMENTS_KEY);
+    if (saved) {
+      gameComments = JSON.parse(saved);
+    }
+  } catch (error) {
+    console.error("加载评论失败:", error);
+    gameComments = {};
+  }
+}
+
+/**
+ * 保存游戏评论
+ */
+function saveGameComments() {
+  try {
+    localStorage.setItem(GAME_COMMENTS_KEY, JSON.stringify(gameComments));
+  } catch (error) {
+    console.error("保存评论失败:", error);
+  }
+}
+
+/**
+ * 打开评论面板
+ */
+function openCommentPanel() {
+  const panel = document.getElementById("replayCommentPanel");
+  if (panel) {
+    panel.classList.add("active");
+    renderCommentList();
+  }
+}
+
+/**
+ * 关闭评论面板
+ */
+function closeCommentPanel() {
+  const panel = document.getElementById("replayCommentPanel");
+  if (panel) {
+    panel.classList.remove("active");
+  }
+}
+
+/**
+ * 渲染评论列表
+ */
+function renderCommentList() {
+  const listEl = document.getElementById("replayCommentList");
+  if (!listEl) return;
+
+  const comments = Object.entries(gameComments)
+    .sort((a, b) => parseInt(a[0]) - parseInt(b[0]));
+
+  if (comments.length === 0) {
+    listEl.innerHTML = `
+      <div class="replay-comment-empty">
+        <span>还没有评论</span>
+        <p>为精彩的对局添加你的见解吧！</p>
+      </div>
+    `;
+    return;
+  }
+
+  listEl.innerHTML = comments.map(([moveNum, comment]) => {
+    const markIcons = {
+      good: "✓",
+      bad: "✗",
+      question: "?",
+      critical: "!"
+    };
+    const markClass = comment.mark || "";
+    const markIcon = comment.mark ? markIcons[comment.mark] : "";
+
+    return `
+      <div class="replay-comment-item ${markClass}" data-move="${moveNum}">
+        <div class="replay-comment-header-row">
+          <span class="replay-comment-move">第 ${moveNum} 手</span>
+          ${comment.mark ? `<span class="replay-comment-mark-icon">${markIcon}</span>` : ""}
+          <button class="replay-comment-delete" data-move="${moveNum}">🗑</button>
+        </div>
+        <div class="replay-comment-text">${comment.text}</div>
+        <div class="replay-comment-meta">
+          <span class="replay-comment-time">${formatCommentTime(comment.timestamp)}</span>
+          <button class="replay-comment-jump" data-move="${moveNum}">跳转到此手</button>
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  // 绑定删除和跳转事件
+  listEl.querySelectorAll(".replay-comment-delete").forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      const moveNum = e.target.dataset.move;
+      deleteComment(moveNum);
+    });
+  });
+
+  listEl.querySelectorAll(".replay-comment-jump").forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      const moveNum = parseInt(e.target.dataset.move);
+      replayGoTo(moveNum);
+    });
+  });
+}
+
+/**
+ * 添加评论
+ */
+function addComment() {
+  const inputEl = document.getElementById("replayCommentInput");
+  const markEl = document.getElementById("replayCommentMark");
+
+  const text = inputEl.value.trim();
+  const mark = markEl.value;
+
+  if (!text && !mark) {
+    speak("请输入评论内容或选择标记");
+    return;
+  }
+
+  const moveNum = replayState.currentStep;
+  gameComments[moveNum] = {
+    text: text || "",
+    mark: mark || "",
+    timestamp: Date.now()
+  };
+
+  saveGameComments();
+  renderCommentList();
+
+  // 清空输入
+  inputEl.value = "";
+  markEl.value = "";
+
+  speak("评论已添加");
+
+  // 在回放信息中显示评论提示
+  updateReplayInfo();
+}
+
+/**
+ * 删除评论
+ */
+function deleteComment(moveNum) {
+  if (confirm(`确定要删除第 ${moveNum} 手的评论吗？`)) {
+    delete gameComments[moveNum];
+    saveGameComments();
+    renderCommentList();
+    updateReplayInfo();
+    speak("评论已删除");
+  }
+}
+
+/**
+ * 格式化评论时间
+ */
+function formatCommentTime(timestamp) {
+  const date = new Date(timestamp);
+  const now = new Date();
+  const diff = now - date;
+
+  if (diff < 60000) {
+    return "刚刚";
+  } else if (diff < 3600000) {
+    return `${Math.floor(diff / 60000)} 分钟前`;
+  } else if (diff < 86400000) {
+    return `${Math.floor(diff / 3600000)} 小时前`;
+  } else {
+    return `${date.getMonth() + 1}/${date.getDate()} ${date.getHours()}:${String(date.getMinutes()).padStart(2, "0")}`;
+  }
+}
+
+/**
+ * 检查当前步是否有评论
+ */
+function hasCommentAtMove(moveNum) {
+  return gameComments[moveNum] !== undefined;
+}
+
+/**
+ * 获取当前步的评论
+ */
+function getCommentAtMove(moveNum) {
+  return gameComments[moveNum] || null;
+}
+
+/**
+ * 修改 updateReplayInfo 函数以显示评论提示
+ */
+const originalUpdateReplayInfo = updateReplayInfo;
+updateReplayInfo = function() {
+  // 调用原函数
+  originalUpdateReplayInfo();
+
+  // 添加评论提示
+  const playerEl = document.getElementById("replayPlayer");
+  if (playerEl && hasCommentAtMove(replayState.currentStep)) {
+    const comment = getCommentAtMove(replayState.currentStep);
+    const markIcons = { good: "✓", bad: "✗", question: "?", critical: "!" };
+    const markIcon = comment.mark ? markIcons[comment.mark] : "";
+    playerEl.innerHTML = `
+      ${playerEl.textContent}
+      <span class="replay-has-comment" title="有评论: ${comment.text}">💬${markIcon}</span>
+    `;
+  }
+};
+
 function exportGameRecord() {
   if (state.moveHistory.length === 0) {
     speak("还没有下棋呢，先下一局吧！");
@@ -2821,6 +3042,9 @@ function init() {
 
   // 初始化学习路径推荐系统
   initLearningPathSystem();
+
+  // 初始化棋谱评论系统
+  loadGameComments();
 
   // Add loading indicator
   console.log("围棋乐园已启动 | Go Learning Garden initialized");

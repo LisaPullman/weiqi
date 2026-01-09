@@ -356,10 +356,39 @@
         <div class="replay-info">
           <span>第 <strong id="replayStep">0</strong> / <span id="replayTotal">0</span> 手</span>
           <span id="replayPlayer">黑方落子</span>
+          <button class="replay-comment-btn" id="replayCommentBtn" title="添加评论">
+            <span>💬</span>
+            <span>添加评论</span>
+          </button>
         </div>
         <div class="replay-board-container">
           <div class="replay-game-board" id="replayBoard"></div>
         </div>
+
+        <!-- 评论面板 -->
+        <div class="replay-comment-panel" id="replayCommentPanel">
+          <div class="replay-comment-header">
+            <h4>💬 棋谱评论</h4>
+            <button class="replay-comment-close" id="closeCommentPanel">✕</button>
+          </div>
+          <div class="replay-comment-list" id="replayCommentList">
+            <!-- 动态生成评论 -->
+          </div>
+          <div class="replay-comment-input-wrapper">
+            <textarea class="replay-comment-input" id="replayCommentInput" placeholder="为当前步数添加评论..."></textarea>
+            <div class="replay-comment-actions">
+              <select class="replay-comment-mark" id="replayCommentMark">
+                <option value="">无标记</option>
+                <option value="good">✓ 好棋</option>
+                <option value="bad">✗ 误算</option>
+                <option value="question">? 疑问手</option>
+                <option value="critical">! 关键手</option>
+              </select>
+              <button class="replay-comment-submit" id="submitCommentBtn">添加</button>
+            </div>
+          </div>
+        </div>
+
         <div class="replay-footer">
           <button class="ghost-btn" id="closeReplayBtn">关闭</button>
         </div>
